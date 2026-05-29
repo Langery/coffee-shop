@@ -1,19 +1,11 @@
 <script setup>
-// Define props using object destructuring pattern
-const { product } = defineProps({
-  product: {
-    type: Object,
-    required: true
-  }
+defineProps({
+  image: String,
+  name: String,
+  shortDesc: String
 })
 
-// Use destructuring for emits
 const emit = defineEmits(['click'])
-
-// Extract product properties using destructuring
-const { image, name, shortDesc } = product
-
-// Arrow function event handler
 const handleClick = () => emit('click')
 </script>
 

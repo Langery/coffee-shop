@@ -35,10 +35,9 @@ const scrollTo = (id) => {
 <template>
   <div class="app">
     <transition name="fade" mode="out-in">
-      <!-- 详情页 - using v-show for better performance than v-if+key -->
+      <!-- 详情页 -->
       <DetailPage
         v-if="isDetailPage && selectedProduct"
-        :key="currentPage"
         v-bind="selectedProduct"
         price-label="售价"
         @back="goHome"

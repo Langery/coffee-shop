@@ -1,11 +1,15 @@
 <script setup>
 import { DescType } from '../data/index.js'
 
-const props = defineProps({
-  product: {
-    type: Object,
-    required: true
-  },
+defineProps({
+  id: String,
+  name: String,
+  shortDesc: String,
+  image: String,
+  tag: String,
+  price: String,
+  unit: String,
+  description: Array,
   priceLabel: {
     type: String,
     default: '售价'
@@ -14,7 +18,6 @@ const props = defineProps({
 
 defineEmits(['back'])
 
-// Helper function to determine CSS class based on description type
 const getDescClass = (item) => {
   const classes = []
   if (item.type === DescType.INTRO) classes.push('intro')
@@ -35,14 +38,14 @@ const getDescClass = (item) => {
     </div>
 
     <div class="detail-content">
-      <img :src="product.image" :alt="product.name" class="detail-hero" />
+      <img :src="image" :alt="name" class="detail-hero" />
 
       <div class="detail-info">
-        <h1>{{ product.name }}</h1>
-        <span class="detail-tag">{{ product.tag }}</span>
+        <h1>{{ name }}</h1>
+        <span class="detail-tag">{{ tag }}</span>
 
         <div class="detail-desc">
-          <template v-for="(item, index) in product.description" :key="index">
+          <template v-for="(item, index) in description" :key="index">
             <p v-if="item.type === DescType.INTRO" :class="getDescClass(item)">
               {{ item.text }}
             </p>
@@ -57,8 +60,8 @@ const getDescClass = (item) => {
 
         <div class="detail-price">
           <span class="label">{{ priceLabel }}</span>
-          <span class="price">{{ product.price }}</span>
-          <span class="unit">{{ product.unit }}</span>
+          <span class="price">{{ price }}</span>
+          <span class="unit">{{ unit }}</span>
         </div>
       </div>
     </div>
