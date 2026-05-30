@@ -1,0 +1,12 @@
+{
+  "jobs": 2,
+  "tasks": [
+    {"id": "matcha-latte", "prompt": "Matcha latte in white ceramic cup on wooden surface, warm cafe lighting, professional food photography", "image": "public/menu-matcha-latte.jpg"},
+    {"id": "jasmine-tea", "prompt": "Jasmine tea in glass teapot on wooden surface, warm cafe lighting, professional food photography", "image": "public/menu-jasmine-tea.jpg"},
+    {"id": "scone", "prompt": "Freshly baked scone on plate on wooden surface, warm cafe lighting, professional food photography", "image": "public/menu-scone.jpg"},
+    {"id": "macaron", "prompt": "French macarons on plate on wooden surface, warm cafe lighting, professional food photography", "image": "public/menu-macaron.jpg"},
+    {"id": "fruit-tart", "prompt": "Fresh fruit tart on plate on wooden surface, warm cafe lighting, professional food photography", "image": "public/menu-fruit-tart.jpg"},
+    {"id": "afternoon-tea", "prompt": "Afternoon tea set on tiered stand on wooden surface, warm cafe lighting, professional food photography", "image": "public/menu-afternoon-tea.jpg"},
+    {"id": "coffee-set", "prompt": "Pour-over coffee setup on wooden surface, warm cafe lighting, professional food photography", "image": "public/menu-coffee-set.jpg"}
+  ]
+}
