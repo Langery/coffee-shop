@@ -92,8 +92,11 @@ const getMenuItemsByCategory = (category) => {
               class="menu-item"
               @click="goToMenuItem(item.id)"
             >
-              <span class="name">{{ item.name }}</span>
-              <span class="price">{{ item.price }}</span>
+              <img :src="item.image" :alt="item.name" class="menu-thumb" />
+              <div class="menu-info">
+                <span class="name">{{ item.name }}</span>
+                <span class="price">{{ item.price }}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -303,9 +306,9 @@ const getMenuItemsByCategory = (category) => {
 
 .menu-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 20px 0;
+  gap: 16px;
+  padding: 16px 0;
   border-bottom: 1px dashed #e0d6cc;
   cursor: pointer;
   transition: all 0.3s;
@@ -320,13 +323,28 @@ const getMenuItemsByCategory = (category) => {
   background: rgba(139, 115, 85, 0.05);
 }
 
+.menu-thumb {
+  width: 72px;
+  height: 72px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.menu-info {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .menu-item .name {
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   color: #3d2b1f;
 }
 
 .menu-item .price {
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   color: #8b7355;
   font-weight: 600;
 }
