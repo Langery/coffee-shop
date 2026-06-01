@@ -4,7 +4,7 @@ import ghPages from 'gh-pages'
 
 export default defineConfig({
   plugins: [vue()],
-  base: './',
+  base: '/coffee-shop/',
   build: {
     outDir: 'dist',
     assetsDir: 'assets'
