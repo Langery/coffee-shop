@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 import { products, menuItems, aboutText, contactInfo, socialLinks, socialIcons } from '../data/index.js'
 import ProductCard from '../components/ProductCard.vue'
 import SocialIcons from '../components/SocialIcons.vue'
@@ -8,8 +8,15 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const scrollTo = (id) => {
-  const element = document.getElementById(id)
-  element?.scrollIntoView({ behavior: 'smooth' })
+  if (router.currentRoute.value.path !== '/') {
+    router.push('/').then(() => {
+      nextTick(() => {
+        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+      })
+    })
+    return
+  }
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
 }
 
 const goToProduct = (id) => {
@@ -39,18 +46,18 @@ const getMenuItemsByCategory = (category) => {
         <h1>拾光咖啡</h1>
         <p class="slogan">在一杯咖啡里，拾起慢下来的时光</p>
         <div class="hero-btns">
-          <button class="hero-btn" @click="scrollTo('about')">关于我们</button>
-          <button class="hero-btn hero-btn-outline" @click="scrollTo('menu')">精选菜单</button>
+          <button class="hero-btn" @click.prevent="scrollTo('about')">关于我们</button>
+          <button class="hero-btn hero-btn-outline" @click.prevent="scrollTo('menu')">精选菜单</button>
         </div>
       </div>
     </header>
 
     <!-- 导航 -->
     <nav class="nav">
-      <a @click="scrollTo('about')">关于我们</a>
-      <a @click="scrollTo('products')">主打产品</a>
-      <a @click="scrollTo('menu')">菜单精选</a>
-      <a @click="scrollTo('contact')">联系方式</a>
+      <a href="#" @click.prevent="scrollTo('about')">关于我们</a>
+      <a href="#" @click.prevent="scrollTo('products')">主打产品</a>
+      <a href="#" @click.prevent="scrollTo('menu')">菜单精选</a>
+      <a href="#" @click.prevent="scrollTo('contact')">联系方式</a>
     </nav>
 
     <!-- 主内容 -->
