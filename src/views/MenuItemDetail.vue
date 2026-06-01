@@ -11,7 +11,7 @@ const menuItem = computed(() => {
 })
 
 const goBack = () => {
-  router.push('/#menu')
+  router.push('/')
 }
 </script>
 
