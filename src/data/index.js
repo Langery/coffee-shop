@@ -30,7 +30,7 @@ const productCatalog = new Map([
     id: 'pour-over',
     name: '手冲单品咖啡',
     shortDesc: '精选来自埃塞俄比亚、哥伦比亚、危地马拉等产区的单一产地咖啡豆...',
-    image: './product-1.jpg',
+    image: '/product-1.jpg',
     tag: '招牌产品',
     price: '¥48',
     unit: '/ 杯',
@@ -48,7 +48,7 @@ const productCatalog = new Map([
     id: 'latte',
     name: '特色创意饮品',
     shortDesc: '季节限定的创意咖啡特调，如桂花拿铁、柚子冷萃、抹茶红豆冰雅哈...',
-    image: './product-2.jpg',
+    image: '/product-2.jpg',
     tag: '季节限定',
     price: '¥38',
     unit: '起 / 杯',
@@ -66,7 +66,7 @@ const productCatalog = new Map([
     id: 'afternoon-tea',
     name: '精品下午茶套餐',
     shortDesc: '包含手工甜点、季节果盘与指定饮品，适宜闺蜜小聚、商务洽谈...',
-    image: './product-3.jpg',
+    image: '/product-3.jpg',
     tag: '双人套餐',
     price: '¥128',
     unit: '/ 双人',
@@ -103,7 +103,7 @@ export const menuItems = [
     category: '咖啡',
     shortDesc: '意式咖啡的灵魂，浓郁的咖啡油脂带来强烈的风味冲击',
     description: '以高压热水萃取的浓缩咖啡，拥有丰厚的金棕色油脂（Crema），是所有意式咖啡的基底。我们选用中深度烘焙的阿拉比卡豆，呈现焦糖、坚果与可可的风味层次。',
-    image: './menu-espresso.jpg'
+    image: '/menu-espresso.jpg'
   },
   {
     id: 'americano',
@@ -113,7 +113,7 @@ export const menuItems = [
     category: '咖啡',
     shortDesc: '浓缩与水的经典融合，口感清爽却不失咖啡本味',
     description: '双份浓缩加入热水稀释，保留咖啡风味的同时降低苦涩感。适合喜欢轻盈口感又不愿牺牲咖啡味道的客人。',
-    image: './menu-americano.jpg'
+    image: '/menu-americano.jpg'
   },
   {
     id: 'latte',
@@ -123,7 +123,7 @@ export const menuItems = [
     category: '咖啡',
     shortDesc: '丝绒般的奶泡与浓缩的完美平衡，温柔易饮',
     description: '双份浓缩注入打发细腻的温热牛奶，顶层铺有精心拉花的 latte art。我们使用燕麦奶或全脂牛奶可选，打造柔滑绵密的口感。',
-    image: './menu-latte.jpg'
+    image: '/menu-latte.jpg'
   },
   {
     id: 'cappuccino',
@@ -133,7 +133,7 @@ export const menuItems = [
     category: '咖啡',
     shortDesc: '三分之一浓缩、三分之一牛奶、三分之一奶泡的经典配比',
     description: '传统意大利式卡布奇诺，浓郁咖啡与丰盈奶泡的黄金比例。适合喜欢强烈咖啡风味与绵密奶泡交织的客人。',
-    image: './menu-cappuccino.jpg'
+    image: '/menu-cappuccino.jpg'
   },
   {
     id: 'mocha',
@@ -143,7 +143,7 @@ export const menuItems = [
     category: '咖啡',
     shortDesc: '巧克力与咖啡的浪漫邂逅，甜蜜与醇苦的交织',
     description: '浓缩、牛奶、巧克力酱与鲜奶油的组合，顶层可加可可粉装饰。适合嗜甜又爱咖啡的你。',
-    image: './menu-mocha.jpg'
+    image: '/menu-mocha.jpg'
   },
   {
     id: 'flat-white',
@@ -153,7 +153,7 @@ export const menuItems = [
     category: '咖啡',
     shortDesc: '细腻微泡牛奶与双份ristretto的浓郁碰撞',
     description: '以双份ristretto为基底，注入细腻的微泡牛奶，咖啡风味更集中，口感更丝滑。源自澳洲的经典风味。',
-    image: './menu-flat-white.jpg'
+    image: '/menu-flat-white.jpg'
   },
   // 特色饮品
   {
@@ -164,7 +164,7 @@ export const menuItems = [
     category: '特色饮品',
     shortDesc: '秋季新鲜桂花与意式浓缩的融合，香气温润',
     description: '选用秋季新鲜桂花与意式浓缩融合，顶部撒上金桂花瓣。桂花的清香与咖啡的醇厚相互映衬，是每年9-11月的限时美味。',
-    image: './menu-osmanthus-latte.jpg'
+    image: '/menu-osmanthus-latte.jpg'
   },
   {
     id: 'grapefruit-cold',
@@ -174,7 +174,7 @@ export const menuItems = [
     category: '特色饮品',
     shortDesc: '16小时低温萃取冷萃与新鲜柚子果酱的清爽组合',
     description: '16小时低温萃取的单一产地冷萃咖啡，加入新鲜柚子果酱。酸甜清爽，是夏季消暑的首选。冰凉沁心，回味悠长。',
-    image: './menu-grapefruit-cold.jpg'
+    image: '/menu-grapefruit-cold.jpg'
   },
   {
     id: 'matcha-red-bean',
@@ -184,7 +184,7 @@ export const menuItems = [
     category: '特色饮品',
     shortDesc: '日式抹茶与意式阿芙佳朵的创意碰撞',
     description: '精选日本宇治抹茶与意式浓缩的创意融合，淋上蜜红豆与淡奶。抹茶的清苦、红豆的甜蜜、咖啡的醇厚，三重风味层层叠加。',
-    image: './menu-matcha-red-bean.jpg'
+    image: '/menu-matcha-red-bean.jpg'
   },
   // 茶类
   {
@@ -195,7 +195,7 @@ export const menuItems = [
     category: '茶饮',
     shortDesc: '日式宇治抹茶与丝滑牛奶的融合，清苦回甘',
     description: '精选日本宇治抹茶粉，以茶筅打至细腻无结块，注入温热牛奶。入口是抹茶的清苦，回味是牛奶的柔滑，余韵悠长。',
-    image: './menu-matcha-latte.jpg'
+    image: '/menu-matcha-latte.jpg'
   },
   {
     id: 'hong-bao-tea',
@@ -205,7 +205,7 @@ export const menuItems = [
     category: '茶饮',
     shortDesc: '南非国宝茶与玫瑰花的芬芳组合，天然无咖啡因',
     description: '以南非如意宝茶（ Rooibos）为基底，加入玫瑰花瓣与荔枝调味。天然无咖啡因，适合晚间饮用，养颜美容。',
-    image: './menu-hong-bao-tea.jpg'
+    image: '/menu-hong-bao-tea.jpg'
   },
   {
     id: 'jasmine-tea',
@@ -215,7 +215,7 @@ export const menuItems = [
     category: '茶饮',
     shortDesc: '茉莉花与高山绿茶的多次窨制，香气馥郁',
     description: '精选福建高山绿茶与新鲜茉莉花经过七次窨制，花香茶香融为一体。茶汤清澈明亮，入口甘甜，适合两三好友共品。',
-    image: './menu-jasmine-tea.jpg'
+    image: '/menu-jasmine-tea.jpg'
   },
   // 甜点
   {
@@ -226,7 +226,7 @@ export const menuItems = [
     category: '甜点',
     shortDesc: '外酥内软的英式传统点心，搭配德文郡奶油与草莓酱',
     description: '按照传统英式配方制作的司康，外酥内软，麦香浓郁。搭配德文郡奶油与自制草莓酱食用，是英式下午茶的经典组合。',
-    image: './menu-scone.jpg'
+    image: '/menu-scone.jpg'
   },
   {
     id: 'macaron',
@@ -236,7 +236,7 @@ export const menuItems = [
     category: '甜点',
     shortDesc: '酥脆外壳与柔软内芯的完美结合，每日新鲜制作',
     description: '法式马卡龙，酥脆的外壳包裹柔软的内心。我们提供多种口味：草莓、抹茶、巧克力、焦糖。每日新鲜制作，建议当天食用。',
-    image: './menu-macaron.jpg'
+    image: '/menu-macaron.jpg'
   },
   {
     id: 'fruit-tart',
@@ -246,7 +246,7 @@ export const menuItems = [
     category: '甜点',
     shortDesc: '酥脆塔皮搭配香草卡仕达与当季新鲜水果',
     description: '酥脆的杏仁塔皮，填入香草卡仕达酱，上铺当日精选的当季新鲜水果。酸甜平衡，精致美味。',
-    image: './menu-fruit-tart.jpg'
+    image: '/menu-fruit-tart.jpg'
   },
   // 套餐
   {
@@ -257,7 +257,7 @@ export const menuItems = [
     category: '套餐',
     shortDesc: '英式司康、法式马卡龙、季节水果塔与指定饮品',
     description: '包含英式司康、法式马卡龙、季节水果塔，可选择手冲咖啡或进口花茶一壶。双人份量，附赠精美摆盘，为您呈现仪式感满满的下午茶体验。',
-    image: './menu-afternoon-tea.jpg'
+    image: '/menu-afternoon-tea.jpg'
   },
   {
     id: 'coffee-set',
@@ -267,7 +267,7 @@ export const menuItems = [
     category: '套餐',
     shortDesc: '任选产区手冲咖啡一杯，配精致小点',
     description: '可选择埃塞俄比亚耶加雪菲、哥伦比亚考卡苏、危地马拉安提瓜或巴拿马翡翠庄园瑰夏任意一款手冲咖啡，配精美小点一份。',
-    image: './menu-coffee-set.jpg'
+    image: '/menu-coffee-set.jpg'
   }
 ]
 
