@@ -34,7 +34,7 @@ const getMenuItemsByCategory = (category) => {
     <!-- Hero -->
     <header class="hero">
       <div class="hero-overlay" />
-      <img src="/hero.jpg" alt="拾光咖啡" class="hero-bg" />
+      <img src="./hero.jpg" alt="拾光咖啡" class="hero-bg" />
       <div class="hero-content">
         <h1>拾光咖啡</h1>
         <p class="slogan">在一杯咖啡里，拾起慢下来的时光</p>
