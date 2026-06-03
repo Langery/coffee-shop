@@ -1,17 +1,279 @@
-/* Global styles reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* ============================================
+   拾光咖啡 · 胶片复古 (1970s 摄影师杂志)
+   - 暖橘+冷青 双色调
+   - 老纸颗粒纹理
+   - 胶片孔 / 拍立得白边
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&family=Noto+Serif+SC:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Special+Elite&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
+
+:root {
+  /* 调亮冷 v3: 主背景接近白 */
+  --paper:       #faf8f3;     /* 近白, 微微米意, 主背景 */
+  --paper-light: #ffffff;     /* 纯白, 卡片/装饰 */
+  --paper-deep:  #f5f1e8;     /* 微微米, 装饰条/footer */
+
+  --ink:         #1f1a15;     /* 暖黑, 主文字 */
+  --ink-soft:    #5a4f43;     /* 副文 (深咖) */
+  --rule:        #d8d2c4;     /* 浅米灰分隔线 */
+
+  --warm:        #b8543a;     /* 赭红强调 (亮一档) */
+  --warm-deep:   #8a3a23;     /* 深赭红 */
+  --cool:        #2f5560;     /* 深青绿副调 */
+  --cool-deep:   #1a3640;     /* 深冷青 */
+  --accent:      #b8543a;     /* 标志主色 (= warm) */
+
+  /* 字体 */
+  --font-serif:    'Playfair Display', 'Cormorant Garamond', 'Noto Serif SC', Georgia, serif;
+  --font-cjk:      'Noto Serif SC', 'Songti SC', 'Source Han Serif SC', serif;
+  --font-sans:     'Inter', -apple-system, sans-serif;
+  --font-mono:     'JetBrains Mono', 'SF Mono', monospace;
+  --font-type:     'Special Elite', 'JetBrains Mono', monospace;  /* 老打字机 */
 }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  background-color: #faf8f5;
+  font-family: var(--font-sans);
+  color: var(--ink);
+  background: var(--paper);
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'kern' 1, 'liga' 1, 'pnum' 1;
+  /* 颗粒纹理 - 极淡 */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.12  0 0 0 0 0.10  0 0 0 0 0.08  0 0 0 0.05 0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+  background-size: 200px 200px;
 }
 
-#app {
+#app { width: 100%; min-height: 100vh; }
+
+/* 中英文混排 */
+.cn-serif { font-family: var(--font-cjk); }
+h1, h2, h3, h4 { font-family: var(--font-serif); font-weight: 600; letter-spacing: -0.01em; line-height: 1.1; }
+.mono { font-family: var(--font-mono); letter-spacing: 0.04em; }
+.typewriter { font-family: var(--font-type); letter-spacing: 0.05em; }
+
+/* 通用小字标 (胶片编号感) */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+
+.eyebrow--accent { color: var(--warm); }
+.eyebrow--cool { color: var(--cool); }
+
+a { color: inherit; text-decoration: none; }
+::selection { background: var(--warm); color: var(--paper); }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--paper); }
+::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--ink-soft); }
+
+/* ============ 胶片 utility classes ============ */
+
+/* 拍立得白边 */
+.polaroid {
+  background: var(--paper-light);
+  padding: 14px 14px 60px;
+  box-shadow:
+    0 2px 8px rgba(58, 36, 24, 0.15),
+    0 0 0 1px rgba(58, 36, 24, 0.05);
+  transform: rotate(-1.5deg);
+  position: relative;
+}
+.polaroid--right { transform: rotate(1.2deg); }
+.polaroid--center { transform: rotate(-0.3deg); }
+.polaroid img { width: 100%; height: auto; display: block; filter: sepia(0.4) saturate(0.85) contrast(0.95); }
+.polaroid figcaption {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  right: 14px;
+  text-align: center;
+  font-family: var(--font-type);
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  letter-spacing: 0.05em;
+}
+
+/* 双色调图 (暖橘+冷青) - 模拟彩色胶片 */
+.duotone {
+  position: relative;
+  display: block;
+  overflow: hidden;
+}
+.duotone img {
   width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  /* 极轻滤镜, 接近原图 */
+  filter: saturate(0.95) brightness(1.02);
+}
+.duotone::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(217, 122, 60, 0.05) 0%, rgba(58, 107, 124, 0.05) 100%);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+/* 棕褐老照片 */
+.sepia img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: sepia(0.7) saturate(0.8) contrast(0.9) brightness(0.92);
+}
+
+/* 胶片孔条 (水平滚动 · 仅 Home 页) */
+.filmstrip-horizontal {
+  position: relative;
+  background: var(--ink);
+  padding: 14px 0;
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.filmstrip-horizontal::-webkit-scrollbar { display: none; }
+.filmstrip-horizontal::before,
+.filmstrip-horizontal::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 16px;
+  background: var(--ink);
+  background-image: radial-gradient(circle at center 14px, var(--paper) 4px, transparent 4.5px);
+  background-size: 16px 28px;
+  background-repeat: repeat-y;
+  z-index: 2;
+}
+.filmstrip-horizontal::before { left: 0; }
+.filmstrip-horizontal::after { right: 0; }
+
+.filmstrip-horizontal__frame {
+  flex: 0 0 240px;
+  height: 240px;
+  position: relative;
+}
+.filmstrip-horizontal__frame .duotone {
+  width: 100%;
+  height: calc(100% - 28px);
+}
+.filmstrip-horizontal__frame .duotone img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: sepia(0.5) saturate(1.2) contrast(0.95);
+}
+.filmstrip-horizontal__num {
+  position: absolute;
+  bottom: 6px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+}
+
+/* 胶片孔 (左右两侧) */
+.filmholes {
+  position: relative;
+  background: var(--ink);
+  padding: 10px 0;
+  height: 14px;
+  background-image: radial-gradient(circle at 14px 7px, var(--paper) 3px, transparent 3.5px);
+  background-size: 28px 14px;
+  background-repeat: repeat-x;
+  background-position: 0 center;
+}
+
+/* 抖动/手绘线 */
+.handdrawn {
+  border: none;
+  height: 18px;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='18' viewBox='0 0 100 18'><path d='M2 9 Q 12 5, 22 9 T 42 9 T 62 9 T 82 9 T 98 9' stroke='%233a2418' stroke-width='1.2' fill='none' stroke-linecap='round'/></svg>") repeat-x center;
+}
+
+/* 印章红 (中文标题用) */
+.stamp {
+  display: inline-block;
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  padding: 0.2rem 0.7rem;
+  font-family: var(--font-cjk);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.2em;
+  transform: rotate(-3deg);
+  background: rgba(200, 69, 31, 0.05);
+}
+
+/* 日期戳 */
+.datestamp {
+  display: inline-block;
+  font-family: var(--font-type);
+  font-size: 0.75rem;
+  color: var(--warm-deep);
+  border: 1.5px solid var(--warm-deep);
+  padding: 0.3rem 0.7rem;
+  letter-spacing: 0.1em;
+  transform: rotate(-1deg);
+  background: rgba(217, 122, 60, 0.08);
+}
+
+/* 老式标签 (像咖啡店挂在杯上的小牌子) */
+.tag {
+  display: inline-block;
+  font-family: var(--font-type);
+  font-size: 0.78rem;
+  color: var(--ink);
+  background: var(--paper-light);
+  border: 1px solid var(--ink-soft);
+  padding: 0.3rem 0.8rem;
+  letter-spacing: 0.05em;
+  position: relative;
+  box-shadow: 1px 1px 0 var(--ink-soft);
+}
+
+/* 装饰: 三联框 (3 张并排像胶片分镜) */
+.triptych {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4px;
+  background: var(--ink);
+  padding: 4px;
+}
+.triptych > * {
+  aspect-ratio: 4/3;
+  overflow: hidden;
+}
+.triptych img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: sepia(0.45) saturate(1.1) contrast(0.95);
+}
+
+/* 不规则倾斜 */
+.tilt-l { transform: rotate(-1.5deg); }
+.tilt-r { transform: rotate(1.2deg); }
+.tilt-c { transform: rotate(-0.3deg); }
+
+/* 大写 + 压扁 (像 old hollywood 标题) */
+.squashed {
+  font-stretch: 75%;
+  letter-spacing: 0.05em;
 }
