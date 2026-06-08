@@ -1,6 +1,6 @@
 /* ============================================
    拾光咖啡 · 胶片复古 (1970s 摄影师杂志)
-   - 暖橘+冷青 双色调
+   - 三色调: 暖橘赭红 + 琥珀金 + 冷青
    - 老纸颗粒纹理
    - 胶片孔 / 拍立得白边
    ============================================ */
@@ -8,20 +8,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&family=Noto+Serif+SC:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Special+Elite&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
 
 :root {
-  /* 调亮冷 v3: 主背景接近白 */
+  /* 纸面 - 颗粒纸基底 */
   --paper:       #faf8f3;     /* 近白, 微微米意, 主背景 */
   --paper-light: #ffffff;     /* 纯白, 卡片/装饰 */
   --paper-deep:  #f5f1e8;     /* 微微米, 装饰条/footer */
 
+  /* 墨 - 文字层级 */
   --ink:         #1f1a15;     /* 暖黑, 主文字 */
   --ink-soft:    #5a4f43;     /* 副文 (深咖) */
   --rule:        #d8d2c4;     /* 浅米灰分隔线 */
 
-  --warm:        #b8543a;     /* 赭红强调 (亮一档) */
+  /* 三色调 - 70s 杂志经典配色 */
+  --warm:        #b8543a;     /* 赭红强调 (主色) */
   --warm-deep:   #8a3a23;     /* 深赭红 */
+  --accent:      #c89a3a;     /* 琥珀金 (第三色, 高亮辅助) */
+  --accent-soft: #e8d4a0;     /* 浅金 (背景/标签) */
   --cool:        #2f5560;     /* 深青绿副调 */
   --cool-deep:   #1a3640;     /* 深冷青 */
-  --accent:      #b8543a;     /* 标志主色 (= warm) */
+
+  /* 阴影层级 */
+  --shadow-sm:  0 2px 8px rgba(31, 26, 21, 0.08);
+  --shadow-md:  0 4px 16px rgba(31, 26, 21, 0.12);
+  --shadow-lg:  0 8px 32px rgba(31, 26, 21, 0.18);
+  --shadow-warm: 0 4px 16px rgba(184, 84, 58, 0.18);
 
   /* 字体 */
   --font-serif:    'Playfair Display', 'Cormorant Garamond', 'Noto Serif SC', Georgia, serif;
@@ -29,6 +38,10 @@
   --font-sans:     'Inter', -apple-system, sans-serif;
   --font-mono:     'JetBrains Mono', 'SF Mono', monospace;
   --font-type:     'Special Elite', 'JetBrains Mono', monospace;  /* 老打字机 */
+
+  /* 缓动 */
+  --ease-out:   cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-soft:  cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -48,26 +61,30 @@ body {
 
 #app { width: 100%; min-height: 100vh; }
 
-/* 中英文混排 */
+/* ============ 字体 utility ============ */
 .cn-serif { font-family: var(--font-cjk); }
-h1, h2, h3, h4 { font-family: var(--font-serif); font-weight: 600; letter-spacing: -0.01em; line-height: 1.1; }
 .mono { font-family: var(--font-mono); letter-spacing: 0.04em; }
 .typewriter { font-family: var(--font-type); letter-spacing: 0.05em; }
 
-/* 通用小字标 (胶片编号感) */
-.eyebrow {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  font-weight: 500;
+h1, h2, h3, h4 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  color: var(--ink);
 }
 
-.eyebrow--accent { color: var(--warm); }
-.eyebrow--cool { color: var(--cool); }
-
+/* ============ 链接 / 焦点 / 选区 ============ */
 a { color: inherit; text-decoration: none; }
+a:hover { color: var(--warm); }
+
+a:focus-visible,
+button:focus-visible,
+[tabindex="0"]:focus-visible {
+  outline: 2px solid var(--warm);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
 ::selection { background: var(--warm); color: var(--paper); }
 
 ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -75,9 +92,268 @@ a { color: inherit; text-decoration: none; }
 ::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--ink-soft); }
 
-/* ============ 胶片 utility classes ============ */
+/* ============ 移动端触摸反馈 ============ */
+@media (hover: none) {
+  button:active,
+  .tab:active,
+  .filter:active,
+  .filter-toggle-btn:active,
+  .btn-primary:active,
+  .btn-ghost:active {
+    opacity: 0.85;
+    transform: scale(0.97);
+  }
+}
 
-/* 拍立得白边 */
+/* ============================================
+   品牌元素 (Brand Elements)
+   拾光咖啡视觉系统的核心装饰
+   ============================================ */
+
+/* Eyebrow - 胶片编号小字标 */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-weight: 600;
+  display: inline-block;
+  margin-bottom: 1.2rem;
+  position: relative;
+  transition: color 0.3s var(--ease-out);
+}
+.eyebrow--ink   { color: var(--ink); }
+.eyebrow--accent { color: var(--warm); }
+.eyebrow--cool   { color: var(--cool); }
+.eyebrow--gold   { color: var(--accent); }
+
+/* Datestamp - 日期戳 */
+.datestamp {
+  display: inline-block;
+  font-family: var(--font-type);
+  font-size: 0.75rem;
+  color: var(--warm);
+  border: 1.5px solid var(--warm);
+  padding: 0.3rem 0.7rem;
+  letter-spacing: 0.1em;
+  transform: rotate(-1deg);
+  background: rgba(184, 84, 58, 0.08);
+  transition: transform 0.3s var(--ease-out), background 0.3s var(--ease-out);
+}
+.datestamp--deep {
+  color: var(--warm-deep);
+  border-color: var(--warm-deep);
+  background: rgba(138, 58, 35, 0.10);
+}
+.datestamp--cool {
+  color: var(--cool);
+  border-color: var(--cool);
+  background: rgba(47, 85, 96, 0.08);
+}
+.datestamp--gold {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: rgba(200, 154, 58, 0.10);
+}
+
+/* Stamp - 印章 (中文标题) */
+.stamp {
+  display: inline-block;
+  border: 2px solid var(--warm);
+  color: var(--warm);
+  padding: 0.25rem 0.8rem;
+  font-family: var(--font-cjk);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.2em;
+  transform: rotate(-3deg);
+  background: rgba(184, 84, 58, 0.05);
+  transition: transform 0.3s var(--ease-out), background 0.3s var(--ease-out);
+}
+.stamp--cool {
+  border-color: var(--cool);
+  color: var(--cool);
+  background: rgba(47, 85, 96, 0.05);
+}
+.stamp--gold {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(200, 154, 58, 0.08);
+}
+
+/* Tag - 老式标签 (像咖啡店挂在杯上的小牌子) */
+.tag {
+  display: inline-block;
+  font-family: var(--font-type);
+  font-size: 0.78rem;
+  color: var(--ink);
+  background: var(--paper-light);
+  border: 1px solid var(--ink-soft);
+  padding: 0.3rem 0.8rem;
+  letter-spacing: 0.05em;
+  position: relative;
+  box-shadow: 1px 1px 0 var(--ink-soft);
+  transition: transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
+}
+.tag--accent { color: var(--warm); border-color: var(--warm); box-shadow: 1px 1px 0 var(--warm); }
+.tag--cool   { color: var(--cool); border-color: var(--cool); box-shadow: 1px 1px 0 var(--cool); }
+.tag--gold   { color: var(--accent); border-color: var(--accent); box-shadow: 1px 1px 0 var(--accent); }
+
+/* Frame label - F·XX 胶片编号 */
+.frame-label {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  font-weight: 600;
+  color: var(--warm);
+}
+
+/* Dropcap - 文章首字下沉 */
+.dropcap {
+  font-family: var(--font-serif);
+  font-size: 3.6rem;
+  font-weight: 800;
+  float: left;
+  line-height: 0.85;
+  margin: 0.25rem 0.4rem 0 0;
+  color: var(--warm);
+  font-style: italic;
+}
+
+/* ============================================
+   按钮 (Buttons)
+   拾光咖啡主操作按钮
+   ============================================ */
+
+.btn-primary,
+.btn-ghost {
+  font-family: var(--font-sans);
+  cursor: pointer;
+  border: none;
+  padding: 0.9rem 2.2rem;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  border-radius: 0;
+  transition: background 0.25s var(--ease-out), color 0.25s var(--ease-out), border-color 0.25s var(--ease-out), transform 0.2s var(--ease-out), box-shadow 0.25s var(--ease-out);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-align: center;
+  line-height: 1;
+}
+
+.btn-primary {
+  background: var(--ink);
+  color: var(--paper);
+  border: 1px solid var(--ink);
+}
+.btn-primary:hover {
+  background: var(--warm);
+  border-color: var(--warm);
+  color: var(--paper);
+  box-shadow: var(--shadow-warm);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 2px solid var(--ink);
+}
+.btn-ghost:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.btn-ghost--accent {
+  border-color: var(--warm);
+  color: var(--warm);
+}
+.btn-ghost--accent:hover {
+  background: var(--warm);
+  color: var(--paper);
+}
+
+/* 反色主按钮 (深底暖色字) - 用于深色 section */
+.btn-primary--inverted {
+  background: var(--ink);
+  color: var(--warm);
+  border: 1px solid var(--ink);
+}
+.btn-primary--inverted:hover {
+  background: var(--warm);
+  color: var(--ink);
+  border-color: var(--warm);
+}
+
+/* 浅底幽灵按钮 (用于深色 section 与深底形成对比) */
+.btn-ghost--light {
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--ink);
+}
+.btn-ghost--light:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* 小号按钮 */
+.btn-sm {
+  padding: 0.6rem 1.4rem;
+  font-size: 0.82rem;
+}
+
+/* ============================================
+   Section Head 统一结构
+   ============================================ */
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 3rem;
+  padding: 0 3rem;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+.section-head--center {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.section-head--start {
+  flex-direction: column;
+  align-items: flex-start;
+}
+.section-head__main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.section-head__title {
+  font-family: var(--font-cjk);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 700;
+  line-height: 1.05;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+}
+.section-head__caption {
+  font-family: var(--font-cjk);
+  font-style: italic;
+  color: var(--ink-soft);
+  max-width: 380px;
+  font-size: 0.95rem;
+}
+
+/* ============================================
+   胶片 utility classes
+   ============================================ */
+
+/* Polaroid 拍立得白边 */
 .polaroid {
   background: var(--paper-light);
   padding: 14px 14px 60px;
@@ -86,9 +362,18 @@ a { color: inherit; text-decoration: none; }
     0 0 0 1px rgba(58, 36, 24, 0.05);
   transform: rotate(-1.5deg);
   position: relative;
+  transition: transform 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out);
+}
+.polaroid:hover {
+  transform: rotate(-1.5deg) translateY(-4px) scale(1.02);
+  box-shadow:
+    0 8px 24px rgba(58, 36, 24, 0.22),
+    0 0 0 1px rgba(58, 36, 24, 0.08);
 }
 .polaroid--right { transform: rotate(1.2deg); }
+.polaroid--right:hover { transform: rotate(1.2deg) translateY(-4px) scale(1.02); }
 .polaroid--center { transform: rotate(-0.3deg); }
+.polaroid--center:hover { transform: rotate(-0.3deg) translateY(-4px) scale(1.02); }
 .polaroid img { width: 100%; height: auto; display: block; filter: sepia(0.4) saturate(0.85) contrast(0.95); }
 .polaroid figcaption {
   position: absolute;
@@ -102,7 +387,7 @@ a { color: inherit; text-decoration: none; }
   letter-spacing: 0.05em;
 }
 
-/* 双色调图 (暖橘+冷青) - 模拟彩色胶片 */
+/* Duotone 双色调图 (暖橘+冷青) - 模拟彩色胶片 */
 .duotone {
   position: relative;
   display: block;
@@ -113,9 +398,10 @@ a { color: inherit; text-decoration: none; }
   height: 100%;
   object-fit: cover;
   display: block;
-  /* 极轻滤镜, 接近原图 */
+  transition: transform 0.6s var(--ease-out);
   filter: saturate(0.95) brightness(1.02);
 }
+.duotone:hover img { transform: scale(1.04); }
 .duotone::after {
   content: '';
   position: absolute;
@@ -125,7 +411,7 @@ a { color: inherit; text-decoration: none; }
   pointer-events: none;
 }
 
-/* 棕褐老照片 */
+/* Sepia 棕褐老照片 */
 .sepia img {
   width: 100%;
   height: 100%;
@@ -134,7 +420,7 @@ a { color: inherit; text-decoration: none; }
   filter: sepia(0.7) saturate(0.8) contrast(0.9) brightness(0.92);
 }
 
-/* 胶片孔条 (水平滚动 · 仅 Home 页) */
+/* Filmstrip horizontal 胶片孔条 (水平滚动) */
 .filmstrip-horizontal {
   position: relative;
   background: var(--ink);
@@ -188,7 +474,7 @@ a { color: inherit; text-decoration: none; }
   letter-spacing: 0.2em;
 }
 
-/* 胶片孔 (左右两侧) */
+/* Filmholes 胶片孔 (左右两侧) */
 .filmholes {
   position: relative;
   background: var(--ink);
@@ -200,55 +486,14 @@ a { color: inherit; text-decoration: none; }
   background-position: 0 center;
 }
 
-/* 抖动/手绘线 */
+/* Handdrawn 抖动/手绘线 */
 .handdrawn {
   border: none;
   height: 18px;
   background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='18' viewBox='0 0 100 18'><path d='M2 9 Q 12 5, 22 9 T 42 9 T 62 9 T 82 9 T 98 9' stroke='%233a2418' stroke-width='1.2' fill='none' stroke-linecap='round'/></svg>") repeat-x center;
 }
 
-/* 印章红 (中文标题用) */
-.stamp {
-  display: inline-block;
-  border: 2px solid var(--accent);
-  color: var(--accent);
-  padding: 0.2rem 0.7rem;
-  font-family: var(--font-cjk);
-  font-weight: 700;
-  font-size: 0.85rem;
-  letter-spacing: 0.2em;
-  transform: rotate(-3deg);
-  background: rgba(200, 69, 31, 0.05);
-}
-
-/* 日期戳 */
-.datestamp {
-  display: inline-block;
-  font-family: var(--font-type);
-  font-size: 0.75rem;
-  color: var(--warm-deep);
-  border: 1.5px solid var(--warm-deep);
-  padding: 0.3rem 0.7rem;
-  letter-spacing: 0.1em;
-  transform: rotate(-1deg);
-  background: rgba(217, 122, 60, 0.08);
-}
-
-/* 老式标签 (像咖啡店挂在杯上的小牌子) */
-.tag {
-  display: inline-block;
-  font-family: var(--font-type);
-  font-size: 0.78rem;
-  color: var(--ink);
-  background: var(--paper-light);
-  border: 1px solid var(--ink-soft);
-  padding: 0.3rem 0.8rem;
-  letter-spacing: 0.05em;
-  position: relative;
-  box-shadow: 1px 1px 0 var(--ink-soft);
-}
-
-/* 装饰: 三联框 (3 张并排像胶片分镜) */
+/* Triptych 三联框 (3 张并排像胶片分镜) */
 .triptych {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -267,13 +512,29 @@ a { color: inherit; text-decoration: none; }
   filter: sepia(0.45) saturate(1.1) contrast(0.95);
 }
 
-/* 不规则倾斜 */
+/* Tilt 不规则倾斜 */
 .tilt-l { transform: rotate(-1.5deg); }
 .tilt-r { transform: rotate(1.2deg); }
 .tilt-c { transform: rotate(-0.3deg); }
 
-/* 大写 + 压扁 (像 old hollywood 标题) */
+/* Squashed 大写 + 压扁 (像 old hollywood 标题) */
 .squashed {
   font-stretch: 75%;
   letter-spacing: 0.05em;
+}
+
+/* ============================================
+   无障碍 - 减少动效
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .duotone:hover img { transform: none; }
+  .polaroid:hover { transform: rotate(-1.5deg); }
+  .polaroid--right:hover { transform: rotate(1.2deg); }
+  .polaroid--center:hover { transform: rotate(-0.3deg); }
 }

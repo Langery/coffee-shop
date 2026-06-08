@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { blogPosts } from '../data/index.js'
 
@@ -8,11 +8,31 @@ const route = useRoute()
 
 const activeCategory = ref('all')
 const categories = computed(() => ['all', ...new Set(blogPosts.map(p => p.category))])
-const filteredPosts = computed(() =>
-  activeCategory.value === 'all'
-    ? blogPosts
-    : blogPosts.filter(p => p.category === activeCategory.value)
-)
+const searchQuery = ref('')
+const sortBy = ref('date-desc') // date-desc | date-asc | reading-desc
+
+const filteredPosts = computed(() => {
+  let posts = blogPosts
+  if (activeCategory.value !== 'all') {
+    posts = posts.filter(p => p.category === activeCategory.value)
+  }
+  if (searchQuery.value.trim()) {
+    const q = searchQuery.value.trim().toLowerCase()
+    posts = posts.filter(p =>
+      p.title.toLowerCase().includes(q) ||
+      (p.subtitle || '').toLowerCase().includes(q) ||
+      (p.excerpt || '').toLowerCase().includes(q) ||
+      p.author.toLowerCase().includes(q) ||
+      p.category.toLowerCase().includes(q)
+    )
+  }
+  // 排序
+  const sorted = [...posts]
+  if (sortBy.value === 'date-desc') sorted.sort((a, b) => b.date.localeCompare(a.date))
+  else if (sortBy.value === 'date-asc') sorted.sort((a, b) => a.date.localeCompare(b.date))
+  else if (sortBy.value === 'reading-desc') sorted.sort((a, b) => (b.reading || 0) - (a.reading || 0))
+  return sorted
+})
 
 const openPost = (id) => router.push(`/blog/${id}`)
 
@@ -21,19 +41,35 @@ const currentPost = computed(() => {
   return blogPosts.find(p => p.id === id)
 })
 
-const imgCover = (post) => post.cover || '/coffee-shop/hero.jpg'
+const imgCover = (post) => post.cover || '/coffee-shop/milestone-2018.jpg'
+
+// 阅读进度 (单篇)
+const readProgress = ref(0)
+const onScroll = () => {
+  const el = document.querySelector('.blog-post')
+  if (!el) return
+  const rect = el.getBoundingClientRect()
+  const total = rect.height - window.innerHeight
+  const scrolled = -rect.top
+  readProgress.value = Math.max(0, Math.min(100, (scrolled / total) * 100))
+}
+onMounted(() => { window.addEventListener('scroll', onScroll, { passive: true }) })
+onUnmounted(() => { window.removeEventListener('scroll', onScroll) })
 </script>
 
 <template>
   <!-- 列表视图 -->
-  <div v-if="!currentPost" class="blog-list">
+  <div
+    v-if="!currentPost"
+    class="blog-list"
+  >
     <section class="b-hero">
       <div class="b-hero__head">
         <span class="datestamp">FRAME 04 · JOURNAL</span>
         <span class="b-hero__roll">4 ENTRIES · 5 CATEGORIES</span>
       </div>
       <h1 class="b-hero__title">
-        咖啡、文字、<br />
+        咖啡、文字、<br>
         与<span class="b-hero__title-warm">慢时间</span>
       </h1>
       <p class="b-hero__lead">
@@ -54,18 +90,74 @@ const imgCover = (post) => post.cover || '/coffee-shop/hero.jpg'
       </button>
     </section>
 
-    <section class="b-entries">
+    <!-- 搜索 + 排序 -->
+    <section class="b-tools">
+      <div class="b-search">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="b-search__icon"
+        >
+          <circle
+            cx="11"
+            cy="11"
+            r="7"
+          /><path d="M21 21l-4.3-4.3" />
+        </svg>
+        <input
+          v-model="searchQuery"
+          type="text"
+          class="b-search__input"
+          placeholder="搜索随笔 · 标题、作者、关键词…"
+          aria-label="搜索随笔"
+        >
+        <button
+          v-if="searchQuery"
+          class="b-search__clear"
+          aria-label="清除搜索"
+          @click="searchQuery = ''"
+        >
+          ×
+        </button>
+      </div>
+      <div class="b-sort">
+        <span class="b-sort__label typewriter">排序</span>
+        <button
+          v-for="opt in [{v:'date-desc',l:'最新'},{v:'date-asc',l:'最早'},{v:'reading-desc',l:'读时长'}]"
+          :key="opt.v"
+          :class="['b-sort__btn', { active: sortBy === opt.v }]"
+          @click="sortBy = opt.v"
+        >
+          {{ opt.l }}
+        </button>
+      </div>
+    </section>
+
+    <section
+      v-if="filteredPosts.length"
+      class="b-entries"
+    >
       <article
         v-for="(post, i) in filteredPosts"
         :key="post.id"
         :class="['entry', `entry--${i % 3}`, 'tilt-c']"
+        :style="{ '--i': i }"
         @click="openPost(post.id)"
       >
         <div class="entry__frame">
-          <div class="duotone"><img :src="imgCover(post)" :alt="post.title" /></div>
+          <div class="duotone">
+            <img
+              :src="imgCover(post)"
+              :alt="post.title"
+            >
+          </div>
           <span class="entry__num">F·{{ String(4 + i).padStart(2, '0') }}</span>
           <span class="entry__cat">{{ post.category }}</span>
-          <span class="entry__tape"></span>
+          <span class="entry__tape" />
         </div>
         <div class="entry__body">
           <div class="entry__meta">
@@ -74,24 +166,67 @@ const imgCover = (post) => post.cover || '/coffee-shop/hero.jpg'
             <span class="entry__reading typewriter">{{ post.reading }} MIN READ</span>
           </div>
           <h3>{{ post.title }}</h3>
-          <p class="entry__excerpt">{{ post.excerpt }}</p>
+          <p class="entry__excerpt">
+            {{ post.excerpt }}
+          </p>
           <span class="entry__cta">阅读全文 →</span>
         </div>
       </article>
     </section>
+
+    <!-- 无结果 -->
+    <section
+      v-else
+      class="b-empty"
+    >
+      <div class="b-empty__frame">
+        <div class="b-empty__cross">
+          ⊘
+        </div>
+        <h3>本卷暂无相关条目</h3>
+        <p>换一个关键词，或切换分类试试</p>
+        <button
+          class="b-empty__reset"
+          @click="() => { searchQuery = ''; activeCategory = 'all' }"
+        >
+          清空筛选
+        </button>
+      </div>
+    </section>
   </div>
 
   <!-- 单篇阅读视图 -->
-  <div v-else class="blog-post">
+  <div
+    v-else
+    class="blog-post"
+  >
+    <!-- 阅读进度条 -->
+    <div
+      class="read-progress"
+      :style="{ '--p': readProgress + '%' }"
+      aria-hidden="true"
+    >
+      <div class="read-progress__bar" />
+      <span class="read-progress__label typewriter">{{ Math.round(readProgress) }}% READ</span>
+    </div>
     <article class="post">
       <header class="post__header">
-        <button class="post__back" @click="router.push({ name: 'blog' })">← 回到随笔</button>
+        <button
+          class="post__back"
+          @click="router.push({ name: 'blog' })"
+        >
+          ← 回到随笔
+        </button>
         <div class="post__meta-top">
           <span class="post__cat">{{ currentPost.category }}</span>
           <span class="post__date typewriter">{{ currentPost.date }}</span>
         </div>
-        <h1 class="post__title">{{ currentPost.title }}</h1>
-        <p class="post__excerpt">{{ currentPost.excerpt }}</p>
+        <h1 class="post__title">
+          {{ currentPost.title }}
+        </h1>
+        <p class="post__excerpt">
+          {{ currentPost.excerpt }}
+        </p>
         <div class="post__byline">
           <span class="typewriter">BY {{ currentPost.author }}</span>
           <span class="meta-sep">·</span>
@@ -99,8 +234,15 @@ const imgCover = (post) => post.cover || '/coffee-shop/hero.jpg'
         </div>
       </header>
       <figure class="post__cover">
-        <div class="duotone"><img :src="imgCover(currentPost)" :alt="currentPost.title" /></div>
-        <figcaption class="typewriter">FRAME 0{{ currentPost.id.toUpperCase() }}A · {{ currentPost.date }}</figcaption>
+        <div class="duotone">
+          <img
+            :src="imgCover(currentPost)"
+            :alt="currentPost.title"
+          >
+        </div>
+        <figcaption class="typewriter">
+          FRAME 0{{ currentPost.id.toUpperCase() }}A · {{ currentPost.date }}
+        </figcaption>
       </figure>
       <div class="post__body">
         <p
@@ -112,11 +254,18 @@ const imgCover = (post) => post.cover || '/coffee-shop/hero.jpg'
             <span class="dropcap">{{ p[0] }}</span>
             <span>{{ p.slice(1) }}</span>
           </template>
-          <template v-else>{{ p }}</template>
+          <template v-else>
+            {{ p }}
+          </template>
         </p>
       </div>
       <footer class="post__footer">
-        <button class="post__back" @click="router.push({ name: 'blog' })">← 浏览所有随笔</button>
+        <button
+          class="post__back"
+          @click="router.push({ name: 'blog' })"
+        >
+          ← 浏览所有随笔
+        </button>
         <span class="post__end typewriter">— END OF ROLL —</span>
       </footer>
     </article>
@@ -130,18 +279,6 @@ const imgCover = (post) => post.cover || '/coffee-shop/hero.jpg'
   background: var(--paper);
   padding-bottom: 2rem;
 }
-.eyebrow {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  display: inline-block;
-  margin-bottom: 1.2rem;
-  font-weight: 600;
-}
-.eyebrow--accent { color: var(--warm); }
-.datestamp { color: var(--warm); border-color: var(--warm); }
 .meta-sep { color: var(--rule); margin: 0 0.4rem; }
 
 /* ============ LIST HERO ============ */
@@ -214,6 +351,97 @@ const imgCover = (post) => post.cover || '/coffee-shop/hero.jpg'
 .cat__label { font-size: 0.92rem; font-weight: 600; }
 .cat__count { font-family: var(--font-mono); font-size: 0.7rem; opacity: 0.7; }
 
+/* ============ TOOLS: 搜索 + 排序 ============ */
+.b-tools {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 3rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.b-search {
+  position: relative;
+  flex: 1;
+  min-width: 240px;
+  max-width: 420px;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--rule);
+  background: var(--paper-light);
+  border-radius: 999px;
+  padding: 0.4rem 1rem;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+.b-search:focus-within {
+  border-color: var(--warm);
+  box-shadow: 0 0 0 3px rgba(200, 85, 61, 0.12);
+}
+.b-search__icon {
+  width: 16px;
+  height: 16px;
+  color: var(--ink-soft);
+  flex-shrink: 0;
+  margin-right: 0.6rem;
+}
+.b-search__input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  color: var(--ink);
+  padding: 0.4rem 0;
+}
+.b-search__input::placeholder { color: var(--ink-soft); opacity: 0.6; }
+.b-search__clear {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: var(--ink-soft);
+  line-height: 1;
+  padding: 0 0.2rem;
+  transition: color 0.2s;
+}
+.b-search__clear:hover { color: var(--warm); }
+
+.b-sort {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+.b-sort__label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  margin-right: 0.3rem;
+}
+.b-sort__btn {
+  background: var(--paper-light);
+  border: 1px solid var(--rule);
+  font-family: var(--font-cjk);
+  font-size: 0.78rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  cursor: pointer;
+  color: var(--ink-soft);
+  transition: all 0.2s;
+}
+.b-sort__btn:hover { border-color: var(--ink); color: var(--ink); }
+.b-sort__btn.active {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+  font-weight: 600;
+}
+
 /* ============ ENTRIES ============ */
 .b-entries {
   display: grid;
@@ -232,6 +460,13 @@ const imgCover = (post) => post.cover || '/coffee-shop/hero.jpg'
   display: flex;
   flex-direction: column;
   box-shadow: 0 3px 8px rgba(31, 26, 21, 0.1);
+  opacity: 0;
+  animation: entryEnter 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation-delay: calc(0.1s + var(--i, 0) * 0.12s);
+}
+@keyframes entryEnter {
+  0% { opacity: 0; transform: translateY(24px) rotate(0deg); }
+  100% { opacity: 1; }
 }
 .entry:hover { transform: translateY(-6px) rotate(-0.5deg); box-shadow: 0 10px 20px rgba(31, 26, 21, 0.18); }
 .entry--0 { grid-column: 1 / span 7; }
@@ -419,6 +654,98 @@ const imgCover = (post) => post.cover || '/coffee-shop/hero.jpg'
   font-style: italic;
 }
 
+/* ============ READ PROGRESS (单篇阅读) ============ */
+.read-progress {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: 32px;
+  background: var(--paper-light);
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  align-items: center;
+  padding: 0 3rem;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+}
+.read-progress__bar {
+  flex: 1;
+  height: 3px;
+  background: var(--rule);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+}
+.read-progress__bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--p, 0%);
+  height: 100%;
+  background: linear-gradient(90deg, var(--warm), var(--warm-deep));
+  transition: width 0.1s linear;
+}
+.read-progress__label {
+  flex-shrink: 0;
+  min-width: 80px;
+  text-align: right;
+  color: var(--warm);
+  font-weight: 600;
+}
+
+/* ============ EMPTY STATE (无结果) ============ */
+.b-empty {
+  padding: 5rem 3rem 8rem;
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+.b-empty__frame {
+  border: 1.5px dashed var(--rule);
+  padding: 3rem 2rem;
+  background: var(--paper-light);
+}
+.b-empty__cross {
+  font-size: 3rem;
+  color: var(--warm);
+  margin-bottom: 1rem;
+  font-family: var(--font-mono);
+}
+.b-empty h3 {
+  font-family: var(--font-cjk);
+  font-size: 1.3rem;
+  margin-bottom: 0.6rem;
+  color: var(--ink);
+}
+.b-empty p {
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  margin-bottom: 1.5rem;
+}
+.b-empty__reset {
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  padding: 0.6rem 1.4rem;
+  cursor: pointer;
+  border-radius: 999px;
+  transition: all 0.25s;
+}
+.b-empty__reset:hover {
+  background: var(--warm);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(200, 85, 61, 0.3);
+}
+
 .post__footer {
   margin-top: 4rem;
   padding-top: 2rem;
@@ -437,5 +764,9 @@ const imgCover = (post) => post.cover || '/coffee-shop/hero.jpg'
   .entry--0, .entry--1, .entry--2, .entry--3, .entry--4 { grid-column: 1; margin-top: 0; }
   .b-hero, .b-cats, .blog-post { padding-left: 1.5rem; padding-right: 1.5rem; }
   .blog-post { padding-top: 2rem; }
+  .b-tools { padding: 0 1.5rem 1rem; gap: 1rem; }
+  .b-search { min-width: 0; max-width: none; flex: 1 0 100%; }
+  .read-progress { padding: 0 1.5rem; height: 28px; font-size: 0.6rem; }
+  .read-progress__label { min-width: 60px; }
 }
 </style>

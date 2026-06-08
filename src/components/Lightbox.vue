@@ -29,21 +29,44 @@ const onBackdrop = (e) => {
 
 <template>
   <Transition name="lightbox">
-    <div v-if="open && frame" class="lightbox" @click="onBackdrop" role="dialog" aria-modal="true">
-      <button class="lightbox__close" @click="emit('close')" aria-label="关闭">×</button>
+    <div
+      v-if="open && frame"
+      class="lightbox"
+      role="dialog"
+      aria-modal="true"
+      @click="onBackdrop"
+    >
+      <button
+        class="lightbox__close"
+        aria-label="关闭"
+        @click="emit('close')"
+      >
+        ×
+      </button>
 
       <figure class="lightbox__figure">
         <div class="lightbox__img-wrap">
           <div class="duotone lightbox__duotone">
-            <img :src="frame.src || frame.image || frame.img" :alt="frame.title || frame.t" />
+            <img
+              :src="frame.src || frame.image || frame.img"
+              :alt="frame.title || frame.t"
+            >
           </div>
         </div>
 
         <figcaption class="lightbox__cap">
           <span class="lightbox__frame-no">FRAME · {{ frame.n || frame.frame }}</span>
-          <h3 class="lightbox__title">{{ frame.title || frame.t }}</h3>
-          <span v-if="frame.year" class="lightbox__year">{{ frame.year }}</span>
-          <p v-if="frame.desc || frame.text" class="lightbox__desc">
+          <h3 class="lightbox__title">
+            {{ frame.title || frame.t }}
+          </h3>
+          <span
+            v-if="frame.year"
+            class="lightbox__year"
+          >{{ frame.year }}</span>
+          <p
+            v-if="frame.desc || frame.text"
+            class="lightbox__desc"
+          >
             {{ frame.desc || frame.text }}
           </p>
         </figcaption>

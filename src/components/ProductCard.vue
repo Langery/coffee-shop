@@ -10,8 +10,15 @@ const handleClick = () => emit('click')
 </script>
 
 <template>
-  <div class="product-card" @click="handleClick">
-    <img :src="image" :alt="name" class="product-img" />
+  <div
+    class="product-card"
+    @click="handleClick"
+  >
+    <img
+      :src="image"
+      :alt="name"
+      class="product-img"
+    >
     <div class="product-info">
       <h3>{{ name }}</h3>
       <p>{{ shortDesc }}</p>
@@ -48,18 +55,18 @@ const handleClick = () => emit('click')
 .product-card h3 {
   font-size: 1.2rem;
   margin-bottom: 8px;
-  color: #3d2b1f;
+  color: var(--ink);
 }
 
 .product-card p {
-  color: #6b5b4f;
+  color: var(--ink-soft);
   font-size: 0.9rem;
   line-height: 1.5;
   margin-bottom: 12px;
 }
 
 .learn-more {
-  color: #8b7355;
+  color: var(--warm);
   font-size: 0.9rem;
   font-weight: 500;
 }

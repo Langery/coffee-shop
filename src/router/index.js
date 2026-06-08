@@ -1,10 +1,10 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Home from '../views/Home.vue'
-import ProductDetail from '../views/ProductDetail.vue'
-import MenuItemDetail from '../views/MenuItemDetail.vue'
+import DetailView from '@/components/DetailView.vue'
 import Story from '../views/Story.vue'
 import Baristas from '../views/Baristas.vue'
 import Blog from '../views/Blog.vue'
+import About from '../views/About.vue'
 
 const router = createRouter({
   history: createWebHashHistory('/coffee-shop/'),
@@ -17,12 +17,14 @@ const router = createRouter({
     {
       path: '/product/:id',
       name: 'product',
-      component: ProductDetail
+      component: DetailView,
+      props: { type: 'product' }
     },
     {
       path: '/menu/:id',
       name: 'menu-item',
-      component: MenuItemDetail
+      component: DetailView,
+      props: { type: 'menu-item' }
     },
     {
       path: '/story',
@@ -43,6 +45,11 @@ const router = createRouter({
       path: '/blog/:id',
       name: 'blog-post',
       component: Blog
+    },
+    {
+      path: '/about',
+      name: 'about',
+      component: About
     }
   ],
   scrollBehavior(to, from, savedPosition) {

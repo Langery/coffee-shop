@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from 'vue'
 import { baristas } from '../data/index.js'
 import { useRouter } from 'vue-router'
 const router = useRouter()
@@ -8,6 +9,28 @@ const teams = [
   { num: 'F·23', name: '李青', role: '咖啡总监 / HEAD BARISTA', years: '08年', quote: '手冲的变量是「人」, 不是机器。' },
   { num: 'F·24', name: '王沐', role: '甜点主厨 / PASTRY CHEF', years: '06年', quote: '咖啡与甜点, 是味道的对话。' },
   { num: 'F·25', name: '陈芷', role: '调饮师 / MIXOLOGIST', years: '05年', quote: '节气入杯, 时令入味。' }
+]
+
+// 闪光状态：点击头像触发 0.4s 白光
+const flashBarista = ref(null)
+const triggerFlash = (id) => {
+  flashBarista.value = id
+  setTimeout(() => {
+    if (flashBarista.value === id) flashBarista.value = null
+  }, 400)
+}
+
+// 时间线节点
+const timeline = [
+  { year: '2010', person: '苏', label: '云南产区学徒', color: 'var(--ink)' },
+  { year: '2013', person: '苏', label: '杯测师认证', color: 'var(--ink)' },
+  { year: '2015', person: '青', label: '台北精品咖啡馆', color: 'var(--warm)' },
+  { year: '2017', person: '沐', label: '里昂博古斯学院', color: 'var(--warm)' },
+  { year: '2018', person: '苏', label: '拾光咖啡开业', color: 'var(--ink)' },
+  { year: '2020', person: '芷', label: '调饮师大赛', color: 'var(--warm)' },
+  { year: '2022', person: '青', label: 'SCA 高级认证', color: 'var(--ink)' },
+  { year: '2024', person: '沐', label: '季节限定甜点', color: 'var(--warm)' },
+  { year: '2026', person: '全员', label: '四双手·拾光', color: 'var(--ink)' }
 ]
 </script>
 
@@ -20,26 +43,42 @@ const teams = [
         <span class="b-hero__roll">CRAFTSPEOPLE · 4 EXP.</span>
       </div>
       <h1 class="b-hero__title">
-        四双手<br />
+        四双手<br>
         的<span class="b-hero__title-warm">专注</span>
       </h1>
       <p class="b-hero__lead">
-        从产地到杯中, 每一支豆子都经咖啡总监手工挑选;<br />
+        从产地到杯中, 每一支豆子都经咖啡总监手工挑选;<br>
         每一杯手冲, 都由四双手之一精心萃取。
       </p>
     </section>
 
     <!-- 大卡: 苏先生 (Founder) -->
-    <section class="b-founder">
+    <section
+      class="b-founder"
+      :class="{ 'is-flash': flashBarista === 'su' }"
+    >
       <div class="b-founder__grid">
-        <div class="b-founder__avatar">
-          <div class="b-founder__initials">苏</div>
+        <div
+          class="b-founder__avatar"
+          role="button"
+          tabindex="0"
+          aria-label="点击拍摄"
+          @click="triggerFlash('su')"
+          @keydown.enter="triggerFlash('su')"
+        >
+          <div class="b-founder__initials">
+            苏
+          </div>
           <span class="b-founder__no">F·22</span>
           <span class="b-founder__role">FOUNDER</span>
+          <span
+            class="b-founder__flash"
+            aria-hidden="true"
+          />
         </div>
         <div class="b-founder__info">
           <span class="eyebrow eyebrow--accent">F·22 · 主理人</span>
-          <h2>苏先生<br />从云南产区走到三里屯</h2>
+          <h2>苏先生<br>从云南产区走到三里屯</h2>
           <p>2010 年起在云南普洱产区开始学习咖啡种植与杯测, 2018 年在北京三里屯开出第一家拾光。「我想做一家自己想去的咖啡馆」—— 这是开店时他写在自己笔记本上的一句话。</p>
           <p>主理人负责每季度的生豆挑选与烘焙曲线调整, 亲自把控每一支豆子的风味走向。</p>
           <div class="b-founder__sig">
@@ -48,6 +87,8 @@ const teams = [
           </div>
         </div>
       </div>
+      <span class="b-founder__tape b-founder__tape--l" />
+      <span class="b-founder__tape b-founder__tape--r" />
     </section>
 
     <!-- 4 个咖啡师 (拍立得卡 2x2) -->
@@ -61,22 +102,42 @@ const teams = [
           v-for="(m, i) in baristas.filter(b => b.id !== 'su').concat([]).slice(0, 3)"
           :key="m.id"
           class="bcard tilt-c"
+          :class="{ 'is-flash': flashBarista === m.id }"
           :style="{ '--i': i }"
+          role="button"
+          tabindex="0"
+          aria-label="点击拍摄"
+          @click="triggerFlash(m.id)"
+          @keydown.enter="triggerFlash(m.id)"
         >
           <div class="bcard__polaroid">
             <div class="bcard__avatar">
-              <div class="bcard__initials">{{ m.initials }}</div>
+              <div class="bcard__initials">
+                {{ m.initials }}
+              </div>
               <span class="bcard__no">{{ teams[i + 1].num }}</span>
+              <span
+                class="bcard__flash"
+                aria-hidden="true"
+              />
             </div>
             <div class="bcard__meta">
               <span class="bcard__years">{{ m.years }}</span>
               <span class="bcard__role typewriter">{{ teams[i + 1].role }}</span>
             </div>
             <h3>{{ m.name }}</h3>
-            <p class="bcard__quote">"{{ m.quote }}"</p>
-            <p class="bcard__bio">{{ m.bio }}</p>
+            <p class="bcard__quote">
+              "{{ m.quote }}"
+            </p>
+            <p class="bcard__bio">
+              {{ m.bio }}
+            </p>
             <div class="bcard__tags">
-              <span v-for="t in (m.spec || []).slice(0, 3)" :key="t" class="bcard__tag">{{ t }}</span>
+              <span
+                v-for="t in (m.spec || []).slice(0, 3)"
+                :key="t"
+                class="bcard__tag"
+              >{{ t }}</span>
             </div>
             <span class="bcard__date">{{ ['06·24·25', '07·08·25', '06·12·25'][i] }}</span>
             <span class="bcard__stamp">{{ ['EXP·23', 'EXP·24', 'EXP·25'][i] }}</span>
@@ -84,20 +145,57 @@ const teams = [
         </article>
       </div>
       <div class="b-grid__caption">
-        <span class="b-grid__caption-line"></span>
+        <span class="b-grid__caption-line" />
         <span class="b-grid__caption-text">— 三双手 · 三个故事 · 三种咖啡哲学 —</span>
-        <span class="b-grid__caption-line"></span>
+        <span class="b-grid__caption-line" />
+      </div>
+    </section>
+
+    <!-- 时间线 — 四双手的咖啡生涯节点 -->
+    <section class="b-timeline">
+      <header class="b-timeline__head">
+        <span class="eyebrow eyebrow--accent">F·26 · 16 YEARS · 4 LIVES</span>
+        <h2>十六年<br>四双手的轨迹</h2>
+        <p class="b-timeline__lead">
+          从云南到台北，从里昂到上海，四个时间线在 2018 年的拾光咖啡交汇。
+        </p>
+      </header>
+      <div class="b-timeline__line">
+        <div class="b-timeline__track" />
+        <div
+          v-for="(t, i) in timeline"
+          :key="i"
+          class="b-timeline__node"
+          :style="{ left: (i / (timeline.length - 1) * 100) + '%', '--node-color': t.color }"
+        >
+          <span class="b-timeline__dot" />
+          <div class="b-timeline__card">
+            <span class="b-timeline__year typewriter">{{ t.year }}</span>
+            <span class="b-timeline__person">{{ t.person }}</span>
+            <span class="b-timeline__label">{{ t.label }}</span>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- CTA -->
     <section class="b-cta">
       <span class="datestamp">F·26 · COME SAY HI</span>
-      <h2>来拾光<br />认识他们</h2>
+      <h2>来拾光<br>认识他们</h2>
       <p>咖啡师每天 8 点到店, 开始当日的手冲备豆。如果你也想了解一杯咖啡背后的故事, 欢迎来店里坐一坐。</p>
       <div class="b-cta__buttons">
-        <button class="btn-primary" @click="router.push({ name: 'home', hash: '#menu' })">浏览菜单</button>
-        <button class="btn-ghost" @click="router.push({ name: 'home', hash: '#contact' })">联络</button>
+        <button
+          class="btn-primary"
+          @click="router.push({ name: 'home', hash: '#menu' })"
+        >
+          浏览菜单
+        </button>
+        <button
+          class="btn-ghost"
+          @click="router.push({ name: 'home', hash: '#contact' })"
+        >
+          联络
+        </button>
       </div>
     </section>
   </div>
@@ -110,18 +208,6 @@ const teams = [
   background: var(--paper);
   padding-bottom: 2rem;
 }
-.eyebrow {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  display: inline-block;
-  margin-bottom: 1.2rem;
-  font-weight: 600;
-}
-.eyebrow--accent { color: var(--warm); }
-.datestamp { color: var(--warm); border-color: var(--warm); }
 
 /* ============ HERO ============ */
 .b-hero {
@@ -490,6 +576,175 @@ const teams = [
 }
 
 /* ============ CTA ============ */
+/* 闪光效果：拍立得拍照瞬间 */
+.bcard__flash,
+.b-founder__flash {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0);
+  pointer-events: none;
+  border-radius: 50%;
+  z-index: 5;
+  transition: background 0.05s ease;
+}
+.bcard.is-flash .bcard__flash,
+.b-founder.is-flash .b-founder__flash {
+  animation: polaroidFlash 0.4s ease-out;
+}
+@keyframes polaroidFlash {
+  0% { background: rgba(255, 255, 255, 0); }
+  10% { background: rgba(255, 255, 255, 0.95); }
+  100% { background: rgba(255, 255, 255, 0); }
+}
+
+/* founder 大卡拍立得化 — 胶带 */
+.b-founder {
+  position: relative;
+  transform: rotate(-1.5deg);
+  transition: transform 0.4s ease;
+}
+.b-founder:hover {
+  transform: rotate(-0.5deg) translateY(-4px);
+}
+.b-founder__tape {
+  position: absolute;
+  top: -12px;
+  width: 90px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(216, 210, 196, 0.6);
+  box-shadow: 0 1px 3px rgba(31, 26, 21, 0.06);
+  z-index: 3;
+}
+.b-founder__tape--l {
+  left: 18%;
+  transform: rotate(-4deg);
+}
+.b-founder__tape--r {
+  right: 18%;
+  transform: rotate(5deg);
+}
+.b-founder__avatar {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+.b-founder__avatar:hover {
+  transform: scale(1.04);
+}
+.b-founder__avatar:focus {
+  outline: none;
+  transform: scale(1.04);
+}
+
+/* 时间线 */
+.b-timeline {
+  margin: 80px 0 60px;
+  padding: 0 24px;
+}
+.b-timeline__head {
+  text-align: center;
+  margin-bottom: 60px;
+}
+.b-timeline__head h2 {
+  font-size: 2.2rem;
+  font-weight: 300;
+  margin: 12px 0 8px;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.b-timeline__lead {
+  max-width: 540px;
+  margin: 0 auto;
+  color: var(--ink);
+  opacity: 0.7;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+.b-timeline__line {
+  position: relative;
+  height: 180px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.b-timeline__track {
+  position: absolute;
+  top: 8px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--ink);
+  opacity: 0.3;
+}
+.b-timeline__node {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+}
+.b-timeline__dot {
+  position: absolute;
+  left: 50%;
+  top: 4px;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--node-color, var(--ink));
+  border: 2px solid var(--paper);
+  box-shadow: 0 0 0 1px var(--node-color, var(--ink));
+  z-index: 2;
+}
+.b-timeline__card {
+  position: absolute;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 130px;
+  text-align: center;
+  padding: 6px 4px;
+}
+.b-timeline__year {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+.b-timeline__person {
+  display: inline-block;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  background: var(--node-color, var(--ink));
+  color: var(--paper);
+  padding: 1px 6px;
+  margin-bottom: 4px;
+  font-family: var(--font-cjk);
+}
+.b-timeline__label {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--ink);
+  opacity: 0.75;
+  line-height: 1.3;
+}
+@media (max-width: 900px) {
+  .b-timeline__line { height: auto; }
+  .b-timeline__track { display: none; }
+  .b-timeline__node {
+    position: relative;
+    left: auto !important;
+    transform: none;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .b-timeline__dot { position: relative; top: 0; left: 0; transform: none; flex-shrink: 0; }
+  .b-timeline__card { position: relative; top: 0; left: 0; transform: none; width: auto; text-align: left; flex: 1; }
+  .b-timeline__label { opacity: 0.7; }
+}
+
 .b-cta {
   padding: 4rem 3rem 3rem;
   text-align: center;
@@ -516,25 +771,6 @@ const teams = [
   gap: 1rem;
   flex-wrap: wrap;
 }
-.btn-primary, .btn-ghost {
-  font-family: var(--font-sans);
-  cursor: pointer;
-  border: none;
-  padding: 0.9rem 2.2rem;
-  font-size: 0.9rem;
-  letter-spacing: 0.05em;
-  border-radius: 0;
-  transition: all 0.25s;
-  font-weight: 600;
-}
-.btn-primary { background: var(--ink); color: var(--paper); }
-.btn-primary:hover { background: var(--warm); }
-.btn-ghost {
-  background: transparent;
-  color: var(--ink);
-  border: 2px solid var(--ink);
-}
-.btn-ghost:hover { background: var(--ink); color: var(--paper); }
 
 /* ============ RESPONSIVE ============ */
 @media (max-width: 900px) {
