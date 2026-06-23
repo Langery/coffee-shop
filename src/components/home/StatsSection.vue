@@ -1,30 +1,11 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { useIntersectionAnimation } from '@/composables/useIntersectionAnimation'
 
 defineProps({
   stats: { type: Array, required: true }
 })
 
-const statsVisible = ref(false)
-const statsRef = ref(null)
-let statsObserver = null
-
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
-onMounted(() => {
-  if (prefersReducedMotion) {
-    statsVisible.value = true
-    return
-  }
-  statsObserver = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) statsVisible.value = true })
-  }, { threshold: 0.3 })
-  if (statsRef.value) statsObserver.observe(statsRef.value)
-})
-
-onUnmounted(() => {
-  if (statsObserver) statsObserver.disconnect()
-})
+const { el: statsRef, isVisible: statsVisible } = useIntersectionAnimation({ threshold: 0.3 })
 </script>
 
 <template>

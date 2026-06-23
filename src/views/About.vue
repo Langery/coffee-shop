@@ -4,20 +4,24 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const visible = ref(false)
+let revealObserver = null
 
 onMounted(() => {
   setTimeout(() => { visible.value = true }, 100)
   // 滚动入场动画：每段当 entry 进入视口时 fade-up
-  const io = new IntersectionObserver((entries) => {
+  revealObserver = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) {
         e.target.classList.add('is-visible')
-        io.unobserve(e.target)
+        revealObserver.unobserve(e.target)
       }
     })
   }, { threshold: 0.15, rootMargin: '0px 0px -80px 0px' })
-  document.querySelectorAll('.reveal').forEach(el => io.observe(el))
-  onUnmounted(() => io.disconnect())
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el))
+})
+
+onUnmounted(() => {
+  revealObserver?.disconnect()
 })
 
 // 三件小事

@@ -1,5 +1,6 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed } from 'vue'
+import { useIntersectionAnimation } from '@/composables/useIntersectionAnimation'
 import SocialIcons from '@/components/SocialIcons.vue'
 
 const props = defineProps({
@@ -8,25 +9,7 @@ const props = defineProps({
   socialIcons: { type: Object, required: true }
 })
 
-const sectionRef = ref(null)
-const isVisible = ref(false)
-let observer = null
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
-onMounted(() => {
-  if (prefersReducedMotion) {
-    isVisible.value = true
-    return
-  }
-  observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) isVisible.value = true })
-  }, { threshold: 0.2 })
-  if (sectionRef.value) observer.observe(sectionRef.value)
-})
-
-onUnmounted(() => {
-  if (observer) observer.disconnect()
-})
+const { el: sectionRef, isVisible } = useIntersectionAnimation({ threshold: 0.2 })
 
 const copyState = ref('点击复制微信号')
 

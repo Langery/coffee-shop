@@ -1,30 +1,12 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { useIntersectionAnimation } from '@/composables/useIntersectionAnimation'
 
 defineProps({
   imgHero: { type: String, required: true }
 })
 
 const emit = defineEmits(['goToStory'])
-const sectionRef = ref(null)
-const isVisible = ref(false)
-let observer = null
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
-onMounted(() => {
-  if (prefersReducedMotion) {
-    isVisible.value = true
-    return
-  }
-  observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) isVisible.value = true })
-  }, { threshold: 0.2 })
-  if (sectionRef.value) observer.observe(sectionRef.value)
-})
-
-onUnmounted(() => {
-  if (observer) observer.disconnect()
-})
+const { el: sectionRef, isVisible } = useIntersectionAnimation({ threshold: 0.2 })
 </script>
 
 <template>
