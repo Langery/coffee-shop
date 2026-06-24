@@ -83,11 +83,17 @@ const goToDetail = (id) => {
       </div>
 
       <div :class="type === 'product' ? 'detail-info' : 'menu-item-card'">
-        <div v-if="type === 'product'" class="detail-tag">{{ currentItem.tag }}</div>
-        <div v-else class="category-tag">{{ currentItem.category }}</div>
+        <div v-if="type === 'product'" class="detail-tag">
+          {{ currentItem.tag }}
+        </div>
+        <div v-else class="category-tag">
+          {{ currentItem.category }}
+        </div>
 
         <h1>{{ currentItem.name }}</h1>
-        <p class="short-desc">{{ currentItem.shortDesc }}</p>
+        <p class="short-desc">
+          {{ currentItem.shortDesc }}
+        </p>
 
         <div class="price-row">
           <span class="price">{{ currentItem.price }}</span>
@@ -131,7 +137,9 @@ const goToDetail = (id) => {
       <div v-if="relatedItems.length" class="related">
         <div class="related__head">
           <span class="eyebrow eyebrow--accent">RELATED · F·25–27</span>
-          <h3 class="related__title">相关推荐</h3>
+          <h3 class="related__title">
+            相关推荐
+          </h3>
         </div>
         <div class="related__grid">
           <article v-for="rm in relatedItems" :key="rm.id" class="related-card" @click="goToDetail(rm.id)">
@@ -139,7 +147,9 @@ const goToDetail = (id) => {
               <img :src="rm.image" :alt="rm.name" @error="$event.target.style.display='none'" />
             </div>
             <h4>{{ rm.name }}</h4>
-            <p class="related-card__desc">{{ rm.shortDesc }}</p>
+            <p class="related-card__desc">
+              {{ rm.shortDesc }}
+            </p>
           </article>
         </div>
       </div>
@@ -150,7 +160,9 @@ const goToDetail = (id) => {
       <span class="datestamp">FRAME · ??</span>
       <h2>未找到相关内容</h2>
       <p>抱歉，您访问的内容可能已被移除或不存在。</p>
-      <button class="btn-primary" @click="goBack">返回首页</button>
+      <button class="btn-primary" @click="goBack">
+        返回首页
+      </button>
     </div>
   </div>
 </template>
