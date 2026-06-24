@@ -7,29 +7,26 @@ const props = defineProps({
   type: { type: String, required: true } // 'product' | 'menu-item'
 })
 
-const emit = defineEmits(['goToProduct', 'goToMenuItem'])
-
 const route = useRoute()
 const router = useRouter()
 
 const imageError = ref(false)
 
+// CSS 前缀: 'product' → 'detail', 'menu-item' → 'menu-item'
+const prefix = computed(() => (props.type === 'product' ? 'detail' : 'menu-item'))
+const items = computed(() => (props.type === 'product' ? products : menuItems))
+
 // 获取当前项
-const currentItem = computed(() => {
-  if (props.type === 'product') {
-    return products.find(p => p.id === route.params.id)
-  }
-  return menuItems.find(m => m.id === route.params.id)
-})
+const currentItem = computed(() => items.value.find(it => it.id === route.params.id))
 
 const handleImageError = () => { imageError.value = true }
 
 // 获取相关推荐
 const relatedItems = computed(() => {
   if (!currentItem.value) return []
-  const sameCat = (props.type === 'product' ? products : menuItems)
+  const sameCat = items.value
     .filter(item => item.category === currentItem.value.category && item.id !== currentItem.value.id)
-  const others = (props.type === 'product' ? products : menuItems)
+  const others = items.value
     .filter(item => item.id !== currentItem.value.id && item.category !== currentItem.value.category)
   return [...sameCat.slice(0, 2), ...others.slice(0, 1)].slice(0, 3)
 })
@@ -37,18 +34,15 @@ const relatedItems = computed(() => {
 const goBack = () => router.push('/')
 
 const goToDetail = (id) => {
-  if (props.type === 'product') {
-    router.push(`/product/${id}`)
-  } else {
-    router.push(`/menu/${id}`)
-  }
+  const base = props.type === 'product' ? 'product' : 'menu'
+  router.push(`/${base}/${id}`)
 }
 </script>
 
 <template>
   <div
     v-if="currentItem"
-    :class="type === 'product' ? 'detail-page' : 'menu-item-page'"
+    :class="`${prefix}-page`"
   >
     <div class="detail-header">
       <button class="back-btn" @click="goBack">
@@ -59,14 +53,14 @@ const goToDetail = (id) => {
       </button>
     </div>
 
-    <div :class="type === 'product' ? 'detail-content' : 'menu-item-content'">
-      <div :class="type === 'product' ? 'detail-hero-wrap' : 'menu-item-hero'">
-        <div :class="type === 'product' ? 'duotone detail-hero__duotone' : 'duotone menu-item-hero__duotone'">
+    <div :class="`${prefix}-content`">
+      <div :class="`${prefix}-hero`">
+        <div :class="`duotone ${prefix}-hero__duotone`">
           <img
             v-if="!imageError"
             :src="currentItem.image"
             :alt="currentItem.name"
-            :class="type === 'product' ? 'detail-hero' : 'hero-image'"
+            :class="`${prefix}-hero__img`"
             @error="handleImageError"
           />
           <div v-else class="image-error-placeholder">
@@ -78,11 +72,11 @@ const goToDetail = (id) => {
             <span>图片加载失败</span>
           </div>
         </div>
-        <span class="typewriter" :class="type === 'product' ? 'detail-hero__film-num' : 'menu-item-hero__film-num'">FRAME · 24A</span>
-        <span :class="type === 'product' ? 'detail-hero__stamp' : 'menu-item-hero__stamp'">FEATURED</span>
+        <span class="typewriter" :class="`${prefix}-hero__film-num`">FRAME · 24A</span>
+        <span :class="`${prefix}-hero__stamp`">FEATURED</span>
       </div>
 
-      <div :class="type === 'product' ? 'detail-info' : 'menu-item-card'">
+      <div :class="`${prefix}-info`">
         <div v-if="type === 'product'" class="detail-tag">
           {{ currentItem.tag }}
         </div>
@@ -212,12 +206,12 @@ const goToDetail = (id) => {
 }
 .detail-content, .menu-item-content { max-width: 1200px; margin: 0 auto; padding: 3rem; }
 
-.detail-hero-wrap, .menu-item-hero {
+.detail-hero, .menu-item-hero {
   position: relative;
   max-width: 700px;
   margin: 0 auto 3rem;
 }
-.detail-hero, .hero-image {
+.detail-hero__img, .menu-item-hero__img {
   width: 100%;
   aspect-ratio: 16/10;
   object-fit: cover;
@@ -266,8 +260,8 @@ const goToDetail = (id) => {
   border: 1px solid var(--ink);
 }
 
-.detail-info, .menu-item-card { max-width: 700px; margin: 0 auto; }
-.detail-info h1, .menu-item-card h1 {
+.detail-info, .menu-item-info { max-width: 700px; margin: 0 auto; }
+.detail-info h1, .menu-item-info h1 {
   font-family: var(--font-cjk);
   font-size: 2.5rem;
   font-weight: 700;
