@@ -1,27 +1,20 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useRevealOnScroll } from '@/composables/useRevealOnScroll'
 
 const router = useRouter()
 const visible = ref(false)
-let revealObserver = null
 
 onMounted(() => {
   setTimeout(() => { visible.value = true }, 100)
-  // 滚动入场动画：每段当 entry 进入视口时 fade-up
-  revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('is-visible')
-        revealObserver.unobserve(e.target)
-      }
-    })
-  }, { threshold: 0.15, rootMargin: '0px 0px -80px 0px' })
-  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el))
 })
 
-onUnmounted(() => {
-  revealObserver?.disconnect()
+// 滚动入场动画：5 个 .reveal 段进入视口时加 .is-visible(CSS 完成 fade-up)
+useRevealOnScroll({
+  selector: '.reveal',
+  threshold: 0.15,
+  rootMargin: '0px 0px -80px 0px'
 })
 
 // 三件小事
