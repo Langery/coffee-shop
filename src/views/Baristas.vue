@@ -1,7 +1,7 @@
 <script setup>
-import { ref } from 'vue'
 import { baristas } from '../data/index.js'
 import { useRouter } from 'vue-router'
+import { useFlash } from '@/composables/useFlash'
 const router = useRouter()
 
 // 苏先生 (founder) 单独展示,其余 3 位进 2x2 卡片
@@ -9,13 +9,7 @@ const founder = baristas.find(b => b.id === 'su')
 const others = baristas.filter(b => b.id !== 'su')
 
 // 闪光状态：点击头像触发 0.4s 白光
-const flashBarista = ref(null)
-const triggerFlash = (id) => {
-  flashBarista.value = id
-  setTimeout(() => {
-    if (flashBarista.value === id) flashBarista.value = null
-  }, 400)
-}
+const { value: flashBarista, trigger: triggerFlash } = useFlash()
 
 // 时间线节点
 const timeline = [

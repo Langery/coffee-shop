@@ -1,5 +1,6 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { useScrollPast } from '@/composables/useScrollPast'
+import { useFlash } from '@/composables/useFlash'
 
 defineProps({
   imgOsmanthus: { type: String, required: true },
@@ -7,34 +8,13 @@ defineProps({
   imgScone: { type: String, required: true },
 })
 
-const emit = defineEmits(['scrollToMenu', 'goToStory'])
+defineEmits(['scrollToMenu', 'goToStory'])
 
-const scrollCue = ref('show')
-let scrollHandler = null
+// scroll-cue:滚过 80px 后隐藏底部 "SCROLL ↓" 提示
+const { past: scrollPast } = useScrollPast(80)
 
-const flashHero = ref(null)
-const triggerHeroFlash = (id) => {
-  flashHero.value = id
-  setTimeout(() => {
-    if (flashHero.value === id) flashHero.value = null
-  }, 400)
-}
-
-const scrollToSection = (id) => emit('scrollToMenu', id)
-const goToPage = (name) => emit('goToStory', name)
-
-onMounted(() => {
-  scrollHandler = () => {
-    if (window.scrollY > 80 && scrollCue.value === 'show') {
-      scrollCue.value = 'gone'
-    }
-  }
-  window.addEventListener('scroll', scrollHandler, { passive: true })
-})
-
-onUnmounted(() => {
-  if (scrollHandler) window.removeEventListener('scroll', scrollHandler)
-})
+// 3 个 polaroid 共用的 flash 状态
+const { value: flashHero, trigger: triggerHeroFlash } = useFlash()
 </script>
 
 <template>
@@ -54,10 +34,16 @@ onUnmounted(() => {
           在一杯咖啡里，<br>拾起慢下来的时光。
         </p>
         <div class="hero__cta">
-          <button class="btn-primary" @click="scrollToSection('menu')">
+          <button
+            class="btn-primary"
+            @click="$emit('scrollToMenu', 'menu')"
+          >
             浏览本卷菜单
           </button>
-          <button class="btn-ghost" @click="goToPage('story')">
+          <button
+            class="btn-ghost"
+            @click="$emit('goToStory', 'story')"
+          >
             阅读品牌故事 →
           </button>
         </div>
@@ -133,7 +119,7 @@ onUnmounted(() => {
         </div>
       </div>
     </div>
-    <div :class="['scroll-cue', scrollCue]">
+    <div :class="['scroll-cue', scrollPast ? 'gone' : 'show']">
       <span class="typewriter">SCROLL ↓</span>
     </div>
   </section>
