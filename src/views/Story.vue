@@ -1,43 +1,36 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import Lightbox from '../components/Lightbox.vue'
 import { useScrollProgress } from '@/composables/useScrollProgress'
+import { useAutoplay } from '@/composables/useAutoplay'
 
 const router = useRouter()
 
 // 使用 composable 获取滚动进度
 const { scrollProgress } = useScrollProgress()
 
-const activeFrame = ref(0)
-let timer = null
-let phase = 'show'
+const milestones = [
+  { year: '2010', frame: '00A', text: '主理人苏先生在云南普洱产区开始学习咖啡种植与杯测。', img: '/coffee-shop/milestone-2010.jpg' },
+  { year: '2014', frame: '01A', text: '云南小粒种在国际杯测中首次突破 85 分，进入精品区间。', img: '/coffee-shop/milestone-2014.jpg' },
+  { year: '2018', frame: '02A', text: '拾光咖啡在三里屯旧巷开张，只有一台手冲壶与一款危地马拉豆。', img: '/coffee-shop/milestone-2018.jpg' },
+  { year: '2020', frame: '03A', text: '第二家店于上海安福路开张，引入甜点主厨王沐。', img: '/coffee-shop/milestone-2020.jpg' },
+  { year: '2022', frame: '04A', text: '调饮师陈芷加入，开启「节气咖啡」系列。', img: '/coffee-shop/milestone-2022.jpg' },
+  { year: '2024', frame: '05A', text: '拾光学院成立，开设手冲萃取与杯测课程。', img: '/coffee-shop/milestone-2024.jpg' },
+  { year: '2026', frame: '06A', text: '累计供应超过 24 万杯手冲咖啡。', img: '/coffee-shop/milestone-2026.jpg' }
+]
 
-const startAutoplay = () => {
-  stopAutoplay()
-  const tick = () => {
-    if (phase === 'show') {
-      phase = 'fade'
-      timer = setTimeout(() => {
-        activeFrame.value = (activeFrame.value + 1) % milestones.length
-        phase = 'show'
-        timer = setTimeout(tick, 2200)
-      }, 600)
-    }
-  }
-  timer = setTimeout(tick, 2200)
-}
-const stopAutoplay = () => {
-  if (timer) { clearTimeout(timer); timer = null }
-  phase = 'show'
-}
+// 时序轴自动轮播 — 接管原 50 行手写 timer/phase
+const { activeIndex: activeFrame, start: startAutoplay, stop: stopAutoplay } = useAutoplay({
+  get totalFrames() { return milestones.length },
+  showDuration: 2200,
+  fadeDuration: 600,
+  autoStart: false
+})
 
 onMounted(() => {
-  setTimeout(startAutoplay, 1000)
+  startAutoplay(1000)
   setTimeout(showLightboxTip, 2500)
-})
-onBeforeUnmount(() => {
-  stopAutoplay()
 })
 
 // 目录跳转
@@ -59,7 +52,7 @@ const onFrameHover = () => stopAutoplay()
 const onFrameLeave = () => {
   // 鼠标移开 3s 后恢复轮播
   setTimeout(() => {
-    if (!lightboxOpen.value) startAutoplay()
+    if (!lightboxOpen.value) startAutoplay(0)
   }, 3000)
 }
 
@@ -68,7 +61,7 @@ const lightboxOpen = ref(false)
 const lightboxFrame = ref(null)
 const closeLightbox = () => {
   lightboxOpen.value = false
-  setTimeout(startAutoplay, 500) // 关灯箱后 0.5s 恢复轮播
+  startAutoplay(500) // 关灯箱后 0.5s 恢复轮播
 }
 
 // 灯箱首次访问提示 (localStorage 记忆)
@@ -86,16 +79,6 @@ const dismissLightboxTip = () => {
   localStorage.setItem('shiguang.lightboxTip.dismissed', '1')
   if (lightboxTipTimer) { clearTimeout(lightboxTipTimer); lightboxTipTimer = null }
 }
-
-const milestones = [
-  { year: '2010', frame: '00A', text: '主理人苏先生在云南普洱产区开始学习咖啡种植与杯测。', img: '/coffee-shop/milestone-2010.jpg' },
-  { year: '2014', frame: '01A', text: '云南小粒种在国际杯测中首次突破 85 分，进入精品区间。', img: '/coffee-shop/milestone-2014.jpg' },
-  { year: '2018', frame: '02A', text: '拾光咖啡在三里屯旧巷开张，只有一台手冲壶与一款危地马拉豆。', img: '/coffee-shop/milestone-2018.jpg' },
-  { year: '2020', frame: '03A', text: '第二家店于上海安福路开张，引入甜点主厨王沐。', img: '/coffee-shop/milestone-2020.jpg' },
-  { year: '2022', frame: '04A', text: '调饮师陈芷加入，开启「节气咖啡」系列。', img: '/coffee-shop/milestone-2022.jpg' },
-  { year: '2024', frame: '05A', text: '拾光学院成立，开设手冲萃取与杯测课程。', img: '/coffee-shop/milestone-2024.jpg' },
-  { year: '2026', frame: '06A', text: '累计供应超过 24 万杯手冲咖啡。', img: '/coffee-shop/milestone-2026.jpg' }
-]
 
 const principles = [
   { num: 'F·11', title: '只用手冲', body: '不卖意式机出品的「美式」「拿铁」——只用手冲与冷萃，每杯都由咖啡师手工萃取。', img: '/coffee-shop/principle-11.jpg' },

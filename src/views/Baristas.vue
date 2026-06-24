@@ -4,12 +4,9 @@ import { baristas } from '../data/index.js'
 import { useRouter } from 'vue-router'
 const router = useRouter()
 
-const teams = [
-  { num: 'F·22', name: '苏先生', role: '主理人 / ROASTMASTER', years: '12年', quote: '一杯好咖啡, 是对时间和豆子的尊重。' },
-  { num: 'F·23', name: '李青', role: '咖啡总监 / HEAD BARISTA', years: '08年', quote: '手冲的变量是「人」, 不是机器。' },
-  { num: 'F·24', name: '王沐', role: '甜点主厨 / PASTRY CHEF', years: '06年', quote: '咖啡与甜点, 是味道的对话。' },
-  { num: 'F·25', name: '陈芷', role: '调饮师 / MIXOLOGIST', years: '05年', quote: '节气入杯, 时令入味。' }
-]
+// 苏先生 (founder) 单独展示,其余 3 位进 2x2 卡片
+const founder = baristas.find(b => b.id === 'su')
+const others = baristas.filter(b => b.id !== 'su')
 
 // 闪光状态：点击头像触发 0.4s 白光
 const flashBarista = ref(null)
@@ -55,7 +52,7 @@ const timeline = [
     <!-- 大卡: 苏先生 (Founder) -->
     <section
       class="b-founder"
-      :class="{ 'is-flash': flashBarista === 'su' }"
+      :class="{ 'is-flash': flashBarista === founder.id }"
     >
       <div class="b-founder__grid">
         <div
@@ -63,11 +60,11 @@ const timeline = [
           role="button"
           tabindex="0"
           aria-label="点击拍摄"
-          @click="triggerFlash('su')"
-          @keydown.enter="triggerFlash('su')"
+          @click="triggerFlash(founder.id)"
+          @keydown.enter="triggerFlash(founder.id)"
         >
           <div class="b-founder__initials">
-            苏
+            {{ founder.initials }}
           </div>
           <span class="b-founder__no">F·22</span>
           <span class="b-founder__role">FOUNDER</span>
@@ -77,13 +74,13 @@ const timeline = [
           />
         </div>
         <div class="b-founder__info">
-          <span class="eyebrow eyebrow--accent">F·22 · 主理人</span>
-          <h2>苏先生<br>从云南产区走到三里屯</h2>
+          <span class="eyebrow eyebrow--accent">F·22 · {{ founder.role.split(' / ')[0] }}</span>
+          <h2>{{ founder.name }}<br>从云南产区走到三里屯</h2>
           <p>2010 年起在云南普洱产区开始学习咖啡种植与杯测, 2018 年在北京三里屯开出第一家拾光。「我想做一家自己想去的咖啡馆」—— 这是开店时他写在自己笔记本上的一句话。</p>
           <p>主理人负责每季度的生豆挑选与烘焙曲线调整, 亲自把控每一支豆子的风味走向。</p>
           <div class="b-founder__sig">
-            <span class="typewriter">— 苏先生 · 主理人</span>
-            <span class="b-founder__years">12 YEARS · ROASTMASTER</span>
+            <span class="typewriter">— {{ founder.name }} · {{ founder.role.split(' / ')[0] }}</span>
+            <span class="b-founder__years">{{ founder.years }} · {{ founder.role.split(' / ')[1] }}</span>
           </div>
         </div>
       </div>
@@ -99,7 +96,7 @@ const timeline = [
       </header>
       <div class="b-grid__cards">
         <article
-          v-for="(m, i) in baristas.filter(b => b.id !== 'su').concat([]).slice(0, 3)"
+          v-for="(m, i) in others"
           :key="m.id"
           class="bcard tilt-c"
           :class="{ 'is-flash': flashBarista === m.id }"
@@ -115,7 +112,7 @@ const timeline = [
               <div class="bcard__initials">
                 {{ m.initials }}
               </div>
-              <span class="bcard__no">{{ teams[i + 1].num }}</span>
+              <span class="bcard__no">F·{{ 23 + i }}</span>
               <span
                 class="bcard__flash"
                 aria-hidden="true"
@@ -123,7 +120,7 @@ const timeline = [
             </div>
             <div class="bcard__meta">
               <span class="bcard__years">{{ m.years }}</span>
-              <span class="bcard__role typewriter">{{ teams[i + 1].role }}</span>
+              <span class="bcard__role typewriter">{{ m.role }}</span>
             </div>
             <h3>{{ m.name }}</h3>
             <p class="bcard__quote">
