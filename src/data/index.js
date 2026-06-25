@@ -85,12 +85,8 @@ const productCatalog = new Map([
   })]
 ])
 
-// Export products as array and getter functions
+// Export products as flat array
 export const products = [...productCatalog.values()]
-
-export const getProductById = (id) => productCatalog.get(id)
-
-export const hasProductId = (id) => productCatalog.has(id)
 
 // Menu items with full details
 export const menuItems = [
@@ -380,9 +376,6 @@ export const socialIcons = {
   weibo: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M10.098 20c-4.612 0-8.348-2.689-8.348-6 0-1.747.924-3.648 2.514-5.34 1.737-1.85 3.914-2.817 6.146-2.724 0 0 .223.038.618.108 1.194.197 2.062.674 2.437 1.378.156.303.195.65.117 1.03a2.22 2.22 0 01-.57 1.097c-.358.386-.883.651-1.566.791.18.167.34.356.476.562.355.549.553 1.24.584 2.055.067 1.681-.458 3.516-1.56 5.333C9.65 19.34 9.87 20 10.098 20zm-4.23-6.23c.295.51.907 1.013 1.736 1.366 1.025.43 2.324.588 3.673.44 1.368-.152 2.644-.636 3.529-1.34-.246.035-.476.052-.68.052-2.264 0-4.1-1.533-4.1-3.423 0-.556.12-1.087.34-1.572-.88.296-1.65.852-2.16 1.548-.577.808-.872 1.755-.738 2.929zm11.066-8.76a2.816 2.816 0 00-2.818 2.814c0 1.554 1.264 2.814 2.818 2.814 1.554 0 2.817-1.26 2.817-2.814 0-1.554-1.263-2.814-2.817-2.814zm.49 4.104h-1.47v-.75h1.47v.75zm0-1.312h-1.47v-.75h1.47v.75z"/></svg>`,
   xiaohongshu: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>`
 }
-
-// Export DescType for use in components
-export { DescType }
 
 // ============================================
 // 咖啡师 (Baristas)
